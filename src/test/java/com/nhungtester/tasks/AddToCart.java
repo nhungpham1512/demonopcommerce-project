@@ -1,28 +1,26 @@
 package com.nhungtester.tasks;
 
 import com.nhungtester.entity.Product;
+import com.nhungtester.ui.CartUI;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
+import net.serenitybdd.screenplay.actions.Clear;
 import net.serenitybdd.screenplay.actions.Click;
-import net.serenitybdd.screenplay.targets.Target;
+import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.ui.Select;
 
 import java.util.List;
 
 public class AddToCart {
-    public static final Target PRODUCT_ITEM = Target.the("{0} item")
-            .locatedBy("//a[text()='{0}']/parent::h2/following-sibling::div[@class='add-info']//button[text()='Add to cart']");
-    public static final Target SHOPPING_CART_HREF = Target.the("shopping cart href")
-            .locatedBy("//a[text()='shopping cart']");
-    public static final Target ADD_TO_CART_BUTTON = Target.the("add to cart button")
-            .locatedBy("(//button[text()='Add to cart'])[1]");
 
     public static Performable theProduct(Product product) {
         return Task.where("{0} add item into cart", actor -> actor.attemptsTo(
-                Click.on(PRODUCT_ITEM.of(product.getNameProduct())),
-                Click.on(ADD_TO_CART_BUTTON),
-                Click.on(SHOPPING_CART_HREF)
+                Click.on(CartUI.PRODUCT_ITEM.of(product.getNameProduct())),
+                Clear.field(CartUI.QTY_INPUT),
+                Enter.theValue(String.valueOf(product.getQuantity())).into(CartUI.QTY_INPUT),
+                Click.on(CartUI.ADD_TO_CART_BUTTON),
+                Click.on(CartUI.SHOPPING_CART_HREF)
         ));
-
     }
 
     public static Performable theProducts(List<Product> products) {
@@ -35,5 +33,17 @@ public class AddToCart {
                     });
                 }
         );
+    }
+
+    public static Performable Shoes(Product product) {
+        return Task.where("{0} add item into cart", actor -> actor.attemptsTo(
+                Click.on(CartUI.PRODUCT_ITEM.of(product.getNameProduct())),
+                Select.option(String.valueOf(product.getSize())).from(CartUI.SIZE_DROPDOWN_LIST),
+                Click.on(CartUI.COLOR_SQUARE.of(product.getColor())),
+                Clear.field(CartUI.QTY_INPUT),
+                Enter.theValue(String.valueOf(product.getQuantity())).into(CartUI.QTY_INPUT),
+                Click.on(CartUI.ADD_TO_CART_BUTTON),
+                Click.on(CartUI.SHOPPING_CART_HREF)
+        ));
     }
 }
